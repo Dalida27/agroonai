@@ -5,13 +5,12 @@ import { useRouter } from 'next/navigation';
 import axios from '../../../utils/axiosInstance';
 import { toast } from 'react-toastify';
 
-const EditClientPage = ({ params }) => {
-  const [client, setClient] = useState({
+const EditTransactionPage = ({ params }) => {
+  const [transaction, setTransaction] = useState({
     name: '',
-    email: '',
-    number: '',
-    order: '',
-    repeat: '',
+    product: '',
+    amount: '',
+    price: '',
     info: ''
   });
 
@@ -19,20 +18,20 @@ const EditClientPage = ({ params }) => {
   const { id } = params;
 
   useEffect(() => {
-    const fetchClient = async () => {
+    const fetchTransaction = async () => {
       try {
-        const response = await axios.get(`/clients/${id}`);
-        setClient(response.data);
+        const response = await axios.get(`/transactions/${id}`);
+        setTransaction(response.data);
       } catch (error) {
         console.error(error);
       }
     };
-    fetchClient();
+    fetchTransaction();
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setClient(prevState => ({
+    setTransaction(prevState => ({
       ...prevState,
       [name]: value
     }));
@@ -41,14 +40,14 @@ const EditClientPage = ({ params }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/clients/${id}`, client);
-      toast.success('Клиент успешно обновлен!', {
+      await axios.put(`/transactions/${id}`, transaction);
+      toast.success('Заказ успешно обновлен!', {
         position: "top-right",
       });
-      router.push('/dashboard/users');
+      router.push('/dashboard/transactions');
     } catch (error) {
       console.error(error);
-      toast.error('Ошибка при обновлении клиента: ' + (error.response?.data?.error || 'Server error'), {
+      toast.error('Ошибка при обновлении заказа: ' + (error.response?.data?.error || 'Server error'), {
         position: "top-right",
       });
     }
@@ -56,69 +55,61 @@ const EditClientPage = ({ params }) => {
 
   return (
     <div className='bg-white p-5 mt-7 border rounded-lg shadow-lg'>
-      <h2 className="text-2xl mb-5">Редактировать клиента</h2>
+      <h2 className="text-2xl mb-5">Редактировать заказ</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700">Имя</label>
           <input 
             type="text" 
             name="name" 
-            value={client.name}
+            value={transaction.name}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Почта</label>
-          <input 
-            type="email" 
-            name="email" 
-            value={client.email}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Номер телефона</label>
+          <label className="block text-gray-700">Продукт</label>
           <input 
             type="text" 
-            name="number" 
-            value={client.number}
+            name="product" 
+            value={transaction.product}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Заказ</label>
+          <label className="block text-gray-700">Заказ в кг</label>
           <input 
-            type="text" 
-            name="order" 
-            value={client.order}
+            type="number" 
+            name="amount" 
+            value={transaction.amount}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Повторный заказ</label>
+          <label className="block text-gray-700">Общая цена в тг</label>
           <input 
-            type="text" 
-            name="repeat" 
-            value={client.repeat}
+            type="number" 
+            name="price" 
+            value={transaction.price}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
+            required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Информация</label>
-          <textarea 
+          <label className="block text-gray-700">Доп. информация</label>
+          <input 
+            type="text" 
             name="info" 
-            value={client.info}
+            value={transaction.info}
             onChange={handleChange}
             className="w-full p-2 border rounded-lg"
-          ></textarea>
+          />
         </div>
         <button type="submit" className="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600">
           Сохранить
@@ -128,4 +119,4 @@ const EditClientPage = ({ params }) => {
   );
 };
 
-export default EditClientPage;
+export default EditTransactionPage;

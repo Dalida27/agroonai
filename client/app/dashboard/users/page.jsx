@@ -104,7 +104,7 @@ const ClientPage = () => {
                 <td className="border px-4 py-2">{new Date(client.addedAt).toLocaleDateString()}</td>
                 <td className="border px-4 py-2">{client.order}</td>
                 <td className="border px-4 py-2 flex items-center space-x-2">
-                  <Link href={`/dashboard/clients/${client._id}`} className='text-black font-semibold bg-[#78b94d] hover:bg-green-600 border rounded-lg px-3 py-2'>
+                  <Link href={`/dashboard/users/${client._id}`} className='text-black font-semibold bg-[#78b94d] hover:bg-green-600 border rounded-lg px-3 py-2'>
                     <button>Просмотр</button>
                   </Link>
                   <button onClick={() => deleteClient(client._id)} className='text-white font-semibold bg-red-500 hover:bg-red-600 border rounded-lg px-3 py-2'>

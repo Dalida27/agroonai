@@ -28,7 +28,7 @@ const menuItems = [
         icons: <MdShoppingBag />,
       },
       {
-        title: "Продажи",
+        title: "Заказы",
         path: "/dashboard/transactions",
         icons: <GrTransaction />,
       },
@@ -49,7 +49,7 @@ const menuItems = [
       // },
       {
         title: "ИИ помощник",
-        path: "/dashboard/ai",
+        path: "/dashboard/recommedations",
         icons: <GiArtificialIntelligence />,
       },
     ],

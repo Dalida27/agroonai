@@ -6,7 +6,8 @@ const connectDB = require("./db.js");
 const authRouter = require("./routes/auth");
 const productRouter = require('./routes/product');
 const clientRouter = require('./routes/client');
-const scrapeAndUpload = require('./scrapeAndUpload.js');
+const transactionRouter = require('./routes/transaction');
+const scrapeAndUpload = require('./utils/scrapeAndUpload.js');
 
 
 const app = express();
@@ -34,6 +35,7 @@ require('./config/passport')(passport);
 app.use('/api/v1/users', authRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/clients', clientRouter);
+app.use('/api/v1/transactions', transactionRouter);
 
 const PORT = process.env.PORT || 8080;
 

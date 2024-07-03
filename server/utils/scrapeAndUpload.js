@@ -6,33 +6,40 @@ const { Pinecone } = require('@pinecone-database/pinecone');
 const OpenAIApi = require("openai");
 
 const scrapeData = async () => {
+  const scrapedData = [];
+  // const baseUrl = "https://www.olx.kz/dom-i-sad/produkty-pitaniya-napitki/q-огурцы/";
+
+  const excludedWords = ['соленье', 'соленные', 'в банках', 'раки', "соленые", "солёные", 'солённые', "мясо", "молоко", "курица", "семена", "рассада", "материалы", "банки", "банка", "банках", "варенье", "соленья", "салаты", "засоленные", "засоленые", "заготовки","полуфабрикаты"];
+
   try {
-    const res = await fetch("https://www.olx.kz/dom-i-sad/produkty-pitaniya-napitki/q-помидоры/");
-    const data = await res.text();
-    const $ = cheerio.load(data);
+    for (let page = 11; page <= 19; page++) {
+      const url = `${baseUrl}?page=${page}`;
+      const res = await fetch(url);
+      const data = await res.text();
+      const $ = cheerio.load(data);
 
-    const scrapedData = [];
-    const cards = $("div.listing-grid-container.css-d4ctjd")
-      .find('div[data-testid="listing-grid"]')
-      .children();
+      const cards = $("div.listing-grid-container.css-d4ctjd")
+        .find('div[data-testid="listing-grid"]')
+        .children();
 
-    cards.each((i, element) => {
-      const title = $(element).find("h6").text();
-      const price = $(element).find('p[data-testid="ad-price"]').text();
-      if (title && price) {
-        scrapedData.push({ title, price });
-      }
-    });
+      cards.each((i, element) => {
+        const title = $(element).find("h6").text().toLowerCase();
+        const price = $(element).find('p[data-testid="ad-price"]').text();
+        if (title && price && !excludedWords.some(word => title.includes(word))) {
+          scrapedData.push({ title, price });
+        }
+      });
 
-    console.log(`Парсинг завершен. Найдено элементов: ${scrapedData.length}`);
+      console.log(`Парсинг страницы ${page} завершен. Найдено элементов: ${scrapedData.length}`);
+    }
+
+    console.log(`Парсинг всех страниц завершен. Всего найдено элементов: ${scrapedData.length}`);
     return scrapedData;
   } catch (error) {
     console.error("Ошибка при парсинге данных:", error);
     return [];
   }
 };
-
-
 
 async function getEmbeddings(data) {
   const openai = new OpenAIApi({
@@ -68,10 +75,8 @@ async function uploadToPinecone(data) {
 
     const dataEmbeddings = await getEmbeddings(data);
 
-    const timestamp = new Date().toISOString();
-
     const dataVectors = dataEmbeddings.map((embedding, i) => ({
-      id: `item_${i}_${timestamp}`,
+      id: `item_${i}`,
       values: embedding,
       metadata: {
         text: `${data[i].title} ${data[i].price}`,
